@@ -5,8 +5,22 @@ export class StorageService {
     this.settingsKey = "pomodoro-settings"
   }
 
+  // Check if localStorage is available (browser environment)
+  isStorageAvailable() {
+    try {
+      return typeof window !== 'undefined' && typeof localStorage !== 'undefined'
+    } catch (error) {
+      return false
+    }
+  }
+
   // Save completed session
   saveSession(session) {
+    if (!this.isStorageAvailable()) {
+      console.warn("localStorage is not available")
+      return false
+    }
+
     try {
       const sessions = this.getSessions()
       sessions.push({
@@ -27,6 +41,10 @@ export class StorageService {
 
   // Get all sessions
   getSessions() {
+    if (!this.isStorageAvailable()) {
+      return []
+    }
+
     try {
       const sessions = localStorage.getItem(this.storageKey)
       return sessions ? JSON.parse(sessions) : []
@@ -75,6 +93,11 @@ export class StorageService {
 
   // Save user settings
   saveSettings(settings) {
+    if (!this.isStorageAvailable()) {
+      console.warn("localStorage is not available")
+      return false
+    }
+
     try {
       localStorage.setItem(this.settingsKey, JSON.stringify(settings))
       return true
@@ -86,29 +109,33 @@ export class StorageService {
 
   // Get user settings
   getSettings() {
+    const defaultSettings = {
+      workDuration: 25,
+      breakDuration: 5,
+      soundEnabled: true,
+      vibrationEnabled: true,
+    }
+
+    if (!this.isStorageAvailable()) {
+      return defaultSettings
+    }
+
     try {
       const settings = localStorage.getItem(this.settingsKey)
-      return settings
-        ? JSON.parse(settings)
-        : {
-            workDuration: 25,
-            breakDuration: 5,
-            soundEnabled: true,
-            vibrationEnabled: true,
-          }
+      return settings ? JSON.parse(settings) : defaultSettings
     } catch (error) {
       console.error("Error loading settings:", error)
-      return {
-        workDuration: 25,
-        breakDuration: 5,
-        soundEnabled: true,
-        vibrationEnabled: true,
-      }
+      return defaultSettings
     }
   }
 
   // Clear all data
   clearAll() {
+    if (!this.isStorageAvailable()) {
+      console.warn("localStorage is not available")
+      return false
+    }
+
     try {
       localStorage.removeItem(this.storageKey)
       localStorage.removeItem(this.settingsKey)

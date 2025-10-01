@@ -4,7 +4,14 @@
 
 @layer base {
   body {
-    @apply bg-background text-text font-sans;
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  .bg-grid-pattern {
+    background-image:
+      linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+    background-size: 50px 50px;
   }
 }
 
